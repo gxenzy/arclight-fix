@@ -52,10 +52,7 @@ public abstract class SynchedEntityDataMixin implements SynchedEntityDataBridge 
 
     public void refresh(ServerPlayer player) {
         var list = this.packAll();
-        if (list == null || list.isEmpty()) {
-            list = this.getNonDefaultValues();
-        }
-        if (list != null && this.entity instanceof Entity entity) {
+        if (list != null && !list.isEmpty() && this.entity instanceof Entity entity) {
             player.connection.send(new ClientboundSetEntityDataPacket(entity.getId(), list));
         }
     }
