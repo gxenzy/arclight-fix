@@ -12,7 +12,7 @@ public class ArclightPermissionImpl {
         }
 
         PermissionCheckEvent.EVENT.register((provider, permission) -> {
-            if (provider instanceof CommandSourceStackBridge stack) {
+            if (org.bukkit.Bukkit.getServer() != null && provider instanceof CommandSourceStackBridge stack) {
                 var sender = stack.bridge$getBukkitSender();
                 if (sender != null) {
                     return TriState.of(sender.hasPermission(permission));

@@ -27,11 +27,11 @@ public abstract class SynchedEntityDataMixin implements SynchedEntityDataBridge 
     @Shadow protected abstract <T> SynchedEntityData.DataItem<T> getItem(EntityDataAccessor<T> key);
     @Shadow private boolean isDirty;
     @Shadow @Final private SyncedDataHolder entity;
-    @Shadow @Nullable public abstract List<SynchedEntityData.DataValue<?>> getNonDefaultValues();
+    @Shadow @Nullable public abstract List<SynchedEntityData.DataValue<?>> packAll();
     // @formatter:on
 
-    @Inject(method = "set(Lnet/minecraft/network/syncher/EntityDataAccessor;Ljava/lang/Object;Z)V", at = @At("HEAD"))
-    private <T> void arclight$syncHealth(EntityDataAccessor<T> key, T value, boolean b, CallbackInfo ci) {
+    @Inject(method = "set(Lnet/minecraft/network/syncher/EntityDataAccessor;Ljava/lang/Object;)V", at = @At("HEAD"))
+    private <T> void arclight$syncHealth(EntityDataAccessor<T> key, T value, CallbackInfo ci) {
         if (key == LivingEntity.DATA_HEALTH_ID && this.entity instanceof ServerPlayerBridge
             && ((ServerPlayerBridge) this.entity).bridge$initialized()) {
             CraftPlayer player = ((ServerPlayerBridge) this.entity).bridge$getBukkitEntity();
@@ -51,7 +51,10 @@ public abstract class SynchedEntityDataMixin implements SynchedEntityDataBridge 
     }
 
     public void refresh(ServerPlayer player) {
-        var list = this.getNonDefaultValues();
+        var list = this.packAll();
+        if (list == null || list.isEmpty()) {
+            list = this.getNonDefaultValues();
+        }
         if (list != null && this.entity instanceof Entity entity) {
             player.connection.send(new ClientboundSetEntityDataPacket(entity.getId(), list));
         }

@@ -250,9 +250,10 @@ public abstract class ServerEntityMixin implements ServerEntityBridge {
         }
     }
 
-    @Inject(method = "sendDirtyEntityData", locals = LocalCapture.CAPTURE_FAILHARD, at = @At(value = "INVOKE", ordinal = 1, target = "Lnet/minecraft/server/level/ServerEntity;broadcastAndSend(Lnet/minecraft/network/protocol/Packet;)V"))
-    private void arclight$sendScaledHealth(CallbackInfo ci, SynchedEntityData entitydatamanager, List<SynchedEntityData.DataValue<?>> list, Set<AttributeInstance> set) {
-        if (this.entity instanceof ServerPlayerBridge player) {
+    @Inject(method = "sendDirtyEntityData", at = @At(value = "INVOKE", ordinal = 1, target = "Lnet/minecraft/server/level/ServerEntity;broadcastAndSend(Lnet/minecraft/network/protocol/Packet;)V"))
+    private void arclight$sendScaledHealth(CallbackInfo ci) {
+        if (this.entity instanceof ServerPlayerBridge player && this.entity instanceof LivingEntity living) {
+            Set<AttributeInstance> set = living.getAttributes().getAttributesToSync();
             player.bridge$getBukkitEntity().injectScaledMaxHealth(set, false);
         }
     }

@@ -12,7 +12,7 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
       - name: Build with Gradle
-        run: ./gradlew build fabricJar --no-daemon
+        run: ./gradlew cleanBuild build collect --no-daemon
       - name: Upload jar
         uses: actions/upload-artifact@v4
         with:
